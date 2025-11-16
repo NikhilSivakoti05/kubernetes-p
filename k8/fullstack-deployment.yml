@@ -73,7 +73,7 @@ spec:
         - name: backend
           image: nikhilsivakoti/k8-backend:latest  # <-- change this
           ports:
-            - containerPort: 2000
+            - containerPort: 30020
 ---
 apiVersion: v1
 kind: Service
@@ -85,9 +85,9 @@ spec:
     app: backend
   ports:
     - protocol: TCP
-      port: 2000
-      targetPort: 2000
-      nodePort: 30025        # Optional fixed NodePort (range 30000–32767)
+      port: 30020
+      targetPort: 30020
+      nodePort: 30020       # Optional fixed NodePort (range 30000–32767)
   type: NodePort
 ---
 # ===========================
@@ -126,5 +126,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080        # Optional fixed NodePort (range 30000–32767)
+      nodePort: 30080     # Optional fixed NodePort (range 30000–32767)
   type: NodePort
