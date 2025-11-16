@@ -28,14 +28,9 @@ spec:
             - containerPort: 3306
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: sql@1234    # ⚠️ change this for production
+              value: sql@1234
             - name: MYSQL_DATABASE
               value: projectdb
-          volumeMounts:
-            - name: mysql-storage
-              mountPath: /var/lib/mysql
-      volumes:
-        - name: mysql-storage
 ---
 apiVersion: v1
 kind: Service
@@ -49,7 +44,6 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  type: ClusterIP
 ---
 # ===========================
 # Backend Deployment & Service
@@ -71,9 +65,16 @@ spec:
     spec:
       containers:
         - name: backend
-          image: nikhilsivakoti/k8-backend:latest  # <-- change this
+          image: nikhilsivakoti/k8-backend:latest
           ports:
             - containerPort: 30020
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql-service:3306/projectdb
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: sql@1234
 ---
 apiVersion: v1
 kind: Service
@@ -87,7 +88,7 @@ spec:
     - protocol: TCP
       port: 30020
       targetPort: 30020
-      nodePort: 30020       # Optional fixed NodePort (range 30000–32767)
+      nodePort: 30025
   type: NodePort
 ---
 # ===========================
@@ -110,7 +111,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: nikhilsivakoti/k8-frontend:latest  # <-- change this
+          image: nikhilsivakoti/k8-frontend:latest
           ports:
             - containerPort: 80
 ---
@@ -126,5 +127,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080     # Optional fixed NodePort (range 30000–32767)
+      nodePort: 30080
   type: NodePort
